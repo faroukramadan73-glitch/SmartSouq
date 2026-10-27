@@ -1,5 +1,8 @@
 
 import Router from "express";
+import authMiddleware from "../../middelware/auth.middelware.js";
+import roleMiddleware from "../../middelware/role.middelware.js";
+import checkOwnership from "../../middelware/checkOwnership.middleware.js";
 
 
 import {
@@ -11,9 +14,13 @@ import {
 
 const router = Router();
 
-router.get("/", getAllUsersController);
-router.get("/:id", getUserByIdController);
-router.put("/:id", updateUserController);
-router.delete("/:id", deleteUserController);
+router.get("/", authMiddleware,roleMiddleware("admin"),
+checkOwnership,getAllUsersController);
+router.get("/:id", authMiddleware,roleMiddleware("admin","customer"),
+checkOwnership,getUserByIdController);
+router.put("/:id", authMiddleware,roleMiddleware("admin","customer"),
+checkOwnership,updateUserController);
+router.delete("/:id", authMiddleware,roleMiddleware("admin","customer"),
+checkOwnership,deleteUserController);
 
 export default router;
